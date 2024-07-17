@@ -1,0 +1,49 @@
+tasks.register('runAll') {
+ 	group = "Other"
+    description = "run all projects include "
+    doLast {
+           // Tạo thread cho server Spring
+        Thread springThread = new Thread({
+            exec {
+                commandLine './gradlew', ':Spring:bootRun', '-Dspring.profiles.active=dev'
+                standardInput = new ByteArrayInputStream('&'.getBytes())
+            }
+        })
+
+        // Tạo thread cho server Spring-gateway
+        Thread gatewayThread = new Thread({
+            exec {
+                commandLine './gradlew', ':Spring-gateway:bootRun', '-Dspring.profiles.active=dev'
+                standardInput = new ByteArrayInputStream('&'.getBytes())
+            }
+        })
+        
+         // Tạo thread cho server Spring-order
+        Thread orderThread = new Thread({
+            exec {
+                commandLine './gradlew', ':Spring-order:bootRun', '-Dspring.profiles.active=dev'
+                standardInput = new ByteArrayInputStream('&'.getBytes())
+            }
+        })
+        
+         // Tạo thread cho server Spring-gateway
+        Thread productThread = new Thread({
+            exec {
+                commandLine './gradlew', ':Spring-product:bootRun', '-Dspring.profiles.active=dev'
+                standardInput = new ByteArrayInputStream('&'.getBytes())
+            }
+        })
+
+        // Khởi động cả hai threads
+        springThread.start()
+        gatewayThread.start()
+        orderThread.start()
+        productThread.start()
+
+        // Chờ cho cả hai threads hoàn thành (tùy chọn, nếu bạn muốn task đợi server chạy xong)
+        springThread.join()
+        gatewayThread.join()
+        orderThread.join()
+        productThread.join()
+     }
+}
