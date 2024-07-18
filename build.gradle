@@ -33,17 +33,28 @@ tasks.register('runAll') {
                 standardInput = new ByteArrayInputStream('&'.getBytes())
             }
         })
+        
+           // Tạo thread cho server Client client
+        Thread clientThread = new Thread({
+            exec {
+                commandLine './gradlew', ':Client:bootRun', '-Dspring.profiles.active=dev'
+                standardInput = new ByteArrayInputStream('&'.getBytes())
+            }
+        })
 
         // Khởi động cả hai threads
         springThread.start()
         gatewayThread.start()
         orderThread.start()
         productThread.start()
+        clientThread.start()
 
         // Chờ cho cả hai threads hoàn thành (tùy chọn, nếu bạn muốn task đợi server chạy xong)
         springThread.join()
         gatewayThread.join()
         orderThread.join()
         productThread.join()
+		clientThread.join()
+        
      }
 }
