@@ -8,6 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.PartitionOffset;
+import org.springframework.kafka.annotation.TopicPartition;
+import org.springframework.kafka.support.KafkaHeaders;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -69,8 +74,25 @@ public class ClientService {
 
 	}
 
-	@KafkaListener(topics = "${kafka.topic.topic1}", groupId = "foo", containerFactory = "fooKafkaListenerContainerFactory")
-	public void consumer(String message) {
+	@KafkaListener(topics = "topicInconrrect", groupId = "foo", containerFactory = "fooKafkaListenerContainerFactory")
+	public void consumer(@Payload String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String header) {
 		LOGGER.info(String.format("Message received -> %s", message));
+		LOGGER.info(String.format("Header of message -> %s", header));
+
+	}
+
+//	@KafkaListener(topicPartitions = @TopicPartition(topic = "topic1", partitionOffsets = {
+////			topicPartitions  = @TopicPartition(topic = "topic1", partitions = { "0", "1" }))
+//			@PartitionOffset(partition = "0", initialOffset = "0"),
+//			@PartitionOffset(partition = "3", initialOffset = "0") }), containerFactory = "partitionsKafkaListenerContainerFactory")
+//	public void listenToPartition(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
+//		LOGGER.info(String.format("Message received -> %s", message));
+//		LOGGER.info(String.format("Header of message -> %s", partition));
+//	}
+	
+	@KafkaListener(topics = "${kafka.topic.topic1}", containerFactory = "kafkaListenerContainerNoGroupWithFilterFactory")
+	public void listenNoGroupWithFilter(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
+		LOGGER.info(String.format("Message received -> %s", message));
+		LOGGER.info(String.format("Header of message -> %s", partition));
 	}
 }
