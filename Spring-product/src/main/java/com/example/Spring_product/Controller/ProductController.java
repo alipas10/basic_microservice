@@ -34,4 +34,12 @@ public class ProductController {
 			return ResponseEntity.badRequest().body("There is error occur !");
 		return ResponseEntity.ok(result.get());
 	}
+	
+	@GetMapping(path = "/sendStringMessage/{topic}/{message}")
+	public ResponseEntity<?> sendMessage (@PathVariable(name = "topic") String topicName
+										, @PathVariable(name = "message") String message){
+		proService.sendMessage(topicName, message);
+		
+		return ResponseEntity.ok("Message sent to kafka broker");
+	}
 }
