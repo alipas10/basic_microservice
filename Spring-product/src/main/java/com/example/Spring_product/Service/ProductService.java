@@ -27,6 +27,9 @@ public class ProductService {
 
 	@Autowired
 	private KafkaTemplate<String, String> kafkaTemplate;
+	
+	@Autowired
+	private KafkaTemplate<String,ProductEntity> kafkaTemplateObject;
 
 	public Optional<List<ProductEntity>> getAllProducts() {
 		return Optional.ofNullable(proRepo.findAll());
@@ -61,5 +64,25 @@ public class ProductService {
 //        	LOGGER.error("Unable to send message=[" + message + "] due to : " + e);
 //
 //        }
+	}
+	
+	public void sendProductById (String topicName, Long id) {
+		Optional<ProductEntity> productResult = proRepo.findById(id);
+		LOGGER.info(String.format("findProductById -> %s", id));
+		productResult.orElseThrow( () -> 
+			new RuntimeException("There is error in method sendProductById")
+		);
+       
+        // send message with ProductEntity type asynchronous (non-blocking)
+        CompletableFuture<SendResult<String, ProductEntity>> result = kafkaTemplateObject.send(topicName, productResult.get());
+        result.whenComplete((success, failure ) -> {
+            if (failure == null) {
+                LOGGER.info("Sent message=[ topic name = " + topicName + 
+                    " | product by Id "+productResult.toString() +" ] with offset=[" + success.getRecordMetadata().offset() + "]");
+            } else {
+            	LOGGER.error("Unable to send message=[ topic name " + 
+                    topicName + "] due to : " + failure.getMessage());
+            }
+        });
 	}
 }

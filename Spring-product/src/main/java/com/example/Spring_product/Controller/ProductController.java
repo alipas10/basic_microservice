@@ -42,4 +42,12 @@ public class ProductController {
 		
 		return ResponseEntity.ok("Message sent to kafka broker");
 	}
+	
+	@GetMapping(path = "/sendMessageByProductId/{topic}/{productId}")
+	public ResponseEntity<?> sendMessage1 (@PathVariable(name = "topic") String topicName
+										, @PathVariable(name = "productId") Long id){
+		proService.sendProductById(topicName, id);
+		
+		return ResponseEntity.ok("Message sent to kafka broker");
+	}
 }

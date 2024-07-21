@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.annotation.PartitionOffset;
-import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -21,6 +19,7 @@ import com.example.Client.DTO.ClientDTO;
 import com.example.Client.DTO.ProductDTO;
 import com.example.Client.Entity.ClientEntiry;
 import com.example.Client.Repository.ClientRepository;
+import com.example.Spring_product.Entity.ProductEntity;
 
 @Service
 public class ClientService {
@@ -74,12 +73,12 @@ public class ClientService {
 
 	}
 
-	@KafkaListener(topics = "topicInconrrect", groupId = "foo", containerFactory = "fooKafkaListenerContainerFactory")
-	public void consumer(@Payload String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String header) {
-		LOGGER.info(String.format("Message received -> %s", message));
-		LOGGER.info(String.format("Header of message -> %s", header));
-
-	}
+//	@KafkaListener(topics = "topicInconrrect", groupId = "foo", containerFactory = "fooKafkaListenerContainerFactory")
+//	public void consumer(@Payload String message, @Header(KafkaHeaders.RECEIVED_TOPIC) String header) {
+//		LOGGER.info(String.format("Message received -> %s", message));
+//		LOGGER.info(String.format("Header of message -> %s", header));
+//
+//	}
 
 //	@KafkaListener(topicPartitions = @TopicPartition(topic = "topic1", partitionOffsets = {
 ////			topicPartitions  = @TopicPartition(topic = "topic1", partitions = { "0", "1" }))
@@ -90,9 +89,16 @@ public class ClientService {
 //		LOGGER.info(String.format("Header of message -> %s", partition));
 //	}
 	
-	@KafkaListener(topics = "${kafka.topic.topic1}", containerFactory = "kafkaListenerContainerNoGroupWithFilterFactory")
-	public void listenNoGroupWithFilter(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
-		LOGGER.info(String.format("Message received -> %s", message));
-		LOGGER.info(String.format("Header of message -> %s", partition));
+//	@KafkaListener(topics = "${kafka.topic.topic1}", containerFactory = "kafkaListenerContainerNoGroupWithFilterFactory")
+//	public void listenNoGroupWithFilter(@Payload String message, @Header(KafkaHeaders.RECEIVED_PARTITION) int partition) {
+//		LOGGER.info(String.format("Message received -> %s", message));
+//		LOGGER.info(String.format("Header of message -> %s", partition));
+//	}
+	
+	@KafkaListener(topics = "${product.topic.name}", containerFactory = "productKafkaListenerContainerFactory")
+	public void listenNoGroupWithFilter(@Payload ProductEntity product, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
+		LOGGER.info(String.format("Message received -> %s", product.getName()));
+		LOGGER.info( product.toString());
+		LOGGER.info(String.format("Header of message -> %s", topic));
 	}
 }
