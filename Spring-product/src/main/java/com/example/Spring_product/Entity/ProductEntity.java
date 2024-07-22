@@ -53,4 +53,11 @@ public class ProductEntity {
 		super();
 	}
 
+	@Override
+	public String toString() {
+		return "ProductEntity [id=" + id + ", price=" + price + ", name=" + name + "]";
+	}
+	
+	
+
 }

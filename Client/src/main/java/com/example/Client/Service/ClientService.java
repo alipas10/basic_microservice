@@ -97,8 +97,7 @@ public class ClientService {
 	
 	@KafkaListener(topics = "${product.topic.name}", containerFactory = "productKafkaListenerContainerFactory")
 	public void listenNoGroupWithFilter(@Payload ProductEntity product, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic) {
-		LOGGER.info(String.format("Message received -> %s", product.getName()));
-		LOGGER.info( product.toString());
+		LOGGER.info("Object message receive ---------------------->" +  product.toString());
 		LOGGER.info(String.format("Header of message -> %s", topic));
 	}
 }

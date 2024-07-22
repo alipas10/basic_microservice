@@ -1,7 +1,10 @@
 package com.example.Spring_product.Entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ProductEntity {
 
+	@JsonProperty(value = "id")
 	private Long productId;
 
 	private Double price;
