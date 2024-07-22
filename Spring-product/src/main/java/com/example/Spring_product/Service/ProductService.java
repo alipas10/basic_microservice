@@ -3,18 +3,17 @@ package com.example.Spring_product.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
 
 import com.example.Spring_product.Entity.ProductEntity;
+import com.example.Spring_product.Entity.Test;
 import com.example.Spring_product.Repository.ProductRepository;
 
 @Service
@@ -30,6 +29,13 @@ public class ProductService {
 	
 	@Autowired
 	private KafkaTemplate<String,ProductEntity> kafkaTemplateObject;
+	
+	@Autowired
+	private KafkaTemplate<String, Object> kafkaTemplateMultiType;
+	
+	
+	@Value(value = "${multi-type.topic.name}")
+	private String multiTypeTopic;
 
 	public Optional<List<ProductEntity>> getAllProducts() {
 		return Optional.ofNullable(proRepo.findAll());
@@ -84,5 +90,11 @@ public class ProductService {
                     topicName + "] due to : " + failure.getMessage());
             }
         });
+	}
+	
+	public void sendMultiType() {
+		kafkaTemplateMultiType.send(multiTypeTopic,new ProductEntity((long) 1,(long)1,"Product A"));
+		kafkaTemplateMultiType.send(multiTypeTopic,new Test("Content A"));
+		kafkaTemplateMultiType.send(multiTypeTopic,"String object 3");
 	}
 }

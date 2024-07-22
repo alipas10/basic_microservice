@@ -2,6 +2,8 @@ package com.example.Spring_product.Controller;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,8 @@ import com.example.Spring_product.Service.ProductService;
 @RestController
 @RequestMapping(path = "/products")
 public class ProductController {
+	
+	Logger log = LoggerFactory.getLogger(ProductController.class);
 	
 	@Autowired
 	ProductService proService;
@@ -49,5 +53,12 @@ public class ProductController {
 		proService.sendProductById(topicName, id);
 		
 		return ResponseEntity.ok("Message sent to kafka broker");
+	}
+	
+	@GetMapping(path = "/sendMultiTypeDefault")
+	public ResponseEntity<?> sendMultiTypeDefaultContent (){
+		proService.sendMultiType();
+		log.info("----------------------> Message sent to kafka broker with multi type and default content");
+		return ResponseEntity.ok("Message sent to kafka broker with multi type and default content ");
 	}
 }
