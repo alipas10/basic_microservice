@@ -12,23 +12,22 @@ import com.example.Spring_product.Entity.Test;
 @Component
 @KafkaListener(topics = "multiType", containerFactory = "multiTypeKafkaListenerContainerFactory")
 public class MultiTypeListenerService {
-	
+
 	Logger log = LoggerFactory.getLogger(MultiTypeListenerService.class);
-	
+
 	@KafkaHandler
-    public void handleGreeting(Test test) {
-		log.info("-------------> Test object received:     "+ test.toString());
-    }
+	public void handleGreeting(Test test) {
+		log.info("-------------> Test object received:     " + test.toString());
+	}
 
-    @KafkaHandler
-    public void handleF(ProductEntity product) {
-    	log.info("-------------> Product object received:     "+ product.toString());
-    }
+	@KafkaHandler
+	public void handleF(ProductEntity product) {
+		log.info("-------------> Product object received:     " + product.toString());
+	}
 
-    @KafkaHandler(isDefault = true)
-    public void unknown(Object object) {
-    	log.info("-------------> Unknown object received:     "+ object.toString());
-    }
-
+	@KafkaHandler(isDefault = true)
+	public void unknown(Object object) {
+		log.info("-------------> Unknown object received:     " + object.toString());
+	}
 
 }

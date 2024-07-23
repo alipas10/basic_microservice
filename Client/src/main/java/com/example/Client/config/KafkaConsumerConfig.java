@@ -13,14 +13,9 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.support.converter.RecordMessageConverter;
-import org.springframework.kafka.support.converter.StringJsonMessageConverter;
-import org.springframework.kafka.support.mapping.DefaultJackson2JavaTypeMapper;
-import org.springframework.kafka.support.mapping.Jackson2JavaTypeMapper;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import com.example.Spring_product.Entity.ProductEntity;
-import com.example.Spring_product.Entity.Test;
 
 @EnableKafka
 @Configuration
@@ -45,7 +40,7 @@ public class KafkaConsumerConfig {
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
 		return new DefaultKafkaConsumerFactory<>(props);
 	}
-	
+
 	public ConsumerFactory<String, ProductEntity> consumerFactoryReceiveObject() {
 		Map<String, Object> props = new HashMap<>();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootServer);
@@ -53,8 +48,8 @@ public class KafkaConsumerConfig {
 		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 		JsonDeserializer<ProductEntity> deserializer = new JsonDeserializer<>(ProductEntity.class);
-        deserializer.addTrustedPackages("com.example.Client.Entity"); 
-        return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
+		deserializer.addTrustedPackages("com.example.Client.Entity");
+		return new DefaultKafkaConsumerFactory<>(props, new StringDeserializer(), deserializer);
 
 	}
 
@@ -91,49 +86,47 @@ public class KafkaConsumerConfig {
 		factory.setRecordFilterStrategy(data -> data.value().startsWith("content"));
 		return factory;
 	}
-	
-	@Bean
-    public ConcurrentKafkaListenerContainerFactory<String, ProductEntity> productKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, ProductEntity> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactoryReceiveObject());
-        factory.getContainerProperties().setGroupId(UUID.randomUUID().toString());
-        return factory;
-    }
-	
-	@Bean
-    public RecordMessageConverter multiTypeConverter() {
-        StringJsonMessageConverter converter = new StringJsonMessageConverter();
-        DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
-        typeMapper.setTypePrecedence(Jackson2JavaTypeMapper.TypePrecedence.TYPE_ID);
-        typeMapper.addTrustedPackages("com.example.Spring_product.Entity");
-        Map<String, Class<?>> mappings = new HashMap<>();
-        mappings.put("test", Test.class);
-        mappings.put("product", ProductEntity.class);
-        typeMapper.setIdClassMapping(mappings);
-        converter.setTypeMapper(typeMapper);
-        return converter;
-    }
 
-    @Bean
-    public ConsumerFactory<String, Object> multiTypeConsumerFactory() {
-        HashMap<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootServer);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        
-        props.put(JsonDeserializer.TYPE_MAPPINGS, 
-        		"test:com.example.Spring_product.Entity.Test, product:com.example.Spring_product.Entity.ProductEntity");
-        
-        return new DefaultKafkaConsumerFactory<>(props);
-    }
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, ProductEntity> productKafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, ProductEntity> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(consumerFactoryReceiveObject());
+		factory.getContainerProperties().setGroupId(UUID.randomUUID().toString());
+		return factory;
+	}
 
-    @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, Object> multiTypeKafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(multiTypeConsumerFactory());
-        factory.getContainerProperties().setGroupId(UUID.randomUUID().toString());
-//        factory.setRecordMessageConverter(multiTypeConverter());
-        return factory;
-    }
+//	@Bean
+//	public RecordMessageConverter multiTypeConverter() {
+//		StringJsonMessageConverter converter = new StringJsonMessageConverter();
+//		DefaultJackson2JavaTypeMapper typeMapper = new DefaultJackson2JavaTypeMapper();
+//		typeMapper.setTypePrecedence(Jackson2JavaTypeMapper.TypePrecedence.TYPE_ID);
+//		typeMapper.addTrustedPackages("com.example.Spring_product.Entity");
+//		Map<String, Class<?>> mappings = new HashMap<>();
+//		mappings.put("test", Test.class);
+//		mappings.put("product", ProductEntity.class);
+//		typeMapper.setIdClassMapping(mappings);
+//		converter.setTypeMapper(typeMapper);
+//		return converter;
+//	}
+
+	@Bean
+	public ConsumerFactory<String, Object> multiTypeConsumerFactory() {
+		HashMap<String, Object> props = new HashMap<>();
+		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootServer);
+		props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+		props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+		props.put(JsonDeserializer.TYPE_MAPPINGS,
+				"test:com.example.Spring_product.Entity.Test, product:com.example.Spring_product.Entity.ProductEntity");
+
+		return new DefaultKafkaConsumerFactory<>(props);
+	}
+
+	@Bean
+	public ConcurrentKafkaListenerContainerFactory<String, Object> multiTypeKafkaListenerContainerFactory() {
+		ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		factory.setConsumerFactory(multiTypeConsumerFactory());
+		factory.getContainerProperties().setGroupId(UUID.randomUUID().toString());
+		return factory;
+	}
 
 }

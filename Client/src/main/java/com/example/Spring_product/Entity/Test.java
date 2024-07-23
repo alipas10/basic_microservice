@@ -24,4 +24,9 @@ public class Test {
 		super();
 	}
 
+	@Override
+	public String toString() {
+		return "Test [contentMessge=" + contentMessge + "]";
+	}
+
 }
