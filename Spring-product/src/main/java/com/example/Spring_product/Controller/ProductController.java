@@ -61,4 +61,11 @@ public class ProductController {
 		log.info("----------------------> Message sent to kafka broker with multi type and default content");
 		return ResponseEntity.ok("Message sent to kafka broker with multi type and default content ");
 	}
+	
+	@GetMapping(path = "/sendMessageWithTransaction")
+	public ResponseEntity<?> sendMessageWithTransactionDefaultContent (){
+		proService.sendMessagWithTransaction();
+		log.info("----------------------> Message sent to kafka broker with transaction and default content");
+		return ResponseEntity.ok("Message sent to kafka broker with transaction and default content ");
+	}
 }

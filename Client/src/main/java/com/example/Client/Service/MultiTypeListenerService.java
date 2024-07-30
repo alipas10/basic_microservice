@@ -10,7 +10,7 @@ import com.example.Spring_product.Entity.ProductEntity;
 import com.example.Spring_product.Entity.Test;
 
 @Component
-@KafkaListener(topics = "multiType", containerFactory = "multiTypeKafkaListenerContainerFactory")
+@KafkaListener(topics = "multiType", containerFactory = "kafkaMultiType")
 public class MultiTypeListenerService {
 
 	Logger log = LoggerFactory.getLogger(MultiTypeListenerService.class);
